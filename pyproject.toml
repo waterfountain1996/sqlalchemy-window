@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sqlalchemy_window"
+description = "A SQLAlchemy plugin to add support for PostgreSQL WINDOW clause"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Roman Necheporenko", email = "roman@waterfountain.one"}]
+requires-python = ">=3.7"
+dependencies = ["sqlalchemy>=2.0"]
+dynamic = ["version"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "sqlalchemy_window.__version__"}
