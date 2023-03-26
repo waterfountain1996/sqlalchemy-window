@@ -19,3 +19,16 @@ classifiers = [
 
 [tool.setuptools.dynamic]
 version = {attr = "sqlalchemy_window.__version__"}
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+command_line = "-m pytest"
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
