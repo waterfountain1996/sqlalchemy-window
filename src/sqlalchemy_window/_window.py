@@ -12,7 +12,7 @@ from sqlalchemy.sql.elements import ClauseList
 from sqlalchemy.sql.elements import _OverRange
 from sqlalchemy.sql.roles import ByOfRole
 
-if typing.TYPE_CHECKING:  # pragma: no coverage
+if typing.TYPE_CHECKING:  # pragma: no cover
     from sqlalchemy.sql._typing import _ColumnExpressionArgument
 
 _ColumnExpression = typing.Union[
