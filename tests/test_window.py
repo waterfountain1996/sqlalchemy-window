@@ -18,28 +18,34 @@ def compile_window(w: Window) -> str:
     return str(w.compile(dialect=postgresql.dialect()))
 
 
-def test_partition_by_inherited_from_existing_window():
+def test_override_partition_by_of_existing_window_without_partition_by_clause():
+    existing = Window("existing")
+    with pytest.raises(ArgumentError) as ctx:
+        Window("w", existing_window=existing, partition_by=literal_column("bar"))
+
+    assert "override PARTITION BY" in str(ctx.value)
+
+
+def test_override_partition_by_of_existing_window():
     existing = Window("existing", partition_by=literal_column("foo"))
-    w = Window("w", existing, partition_by=literal_column("bar"))
-    assert w.partition_by is existing.partition_by
+    with pytest.raises(ArgumentError) as ctx:
+        Window("w", existing_window=existing, partition_by=literal_column("bar"))
+
+    assert "override PARTITION BY" in str(ctx.value)
 
 
-def test_partition_by_overriden():
-    existing = Window("existing", partition_by=None)
-    w = Window("w", existing, partition_by=literal_column("foo"))
-    assert w.partition_by is not None
+def test_order_by_with_existing_window_without_order_by_clause():
+    existing = Window("existing")
+    w = Window("w", existing_window=existing, order_by=literal_column("bar"))
+    assert compile_window(w) == "w AS (existing ORDER BY bar)"
 
 
-def test_order_by_inherited_from_existing_window():
+def test_override_order_by_of_existing_window():
     existing = Window("existing", order_by=literal_column("foo"))
-    w = Window("w", existing, order_by=literal_column("bar"))
-    assert w.order_by is existing.order_by
+    with pytest.raises(ArgumentError) as ctx:
+        Window("w", existing_window=existing, order_by=literal_column("bar"))
 
-
-def test_order_by_overriden():
-    existing = Window("existing", order_by=None)
-    w = Window("w", existing, order_by=literal_column("foo"))
-    assert w.order_by is not None
+    assert "override ORDER BY" in str(ctx.value)
 
 
 def test_mutually_exclusive_parameters():

@@ -63,17 +63,23 @@ class Window(ClauseElement):
         self.name = name
         self.existing_window = existing_window
 
-        if existing_window is not None and existing_window.partition_by is not None:
-            self.partition_by = existing_window.partition_by
-        elif partition_by is not None:
+        if partition_by is not None:
+            if existing_window is not None:
+                raise ArgumentError(
+                    f"Cannot override PARTITION BY clause of window '{existing_window.name}'"
+                )
+
             self.partition_by = ClauseList(
                 *util.to_list(partition_by),
                 _literal_as_text_role=ByOfRole,
             )
 
-        if existing_window is not None and existing_window.order_by is not None:
-            self.order_by = existing_window.order_by
-        elif order_by is not None:
+        if order_by is not None:
+            if existing_window is not None and existing_window.order_by is not None:
+                raise ArgumentError(
+                    f"Cannot override ORDER BY clause of window {existing_window.name}"
+                )
+
             self.order_by = ClauseList(
                 *util.to_list(order_by),
                 _literal_as_text_role=ByOfRole,
@@ -177,4 +183,8 @@ def compile_window(element: Window, compiler: SQLCompiler, **kwargs: typing.Any)
         ]
         + ([frame] if frame else [])
     )
+
+    if element.existing_window is not None:
+        text = "{} {}".format(element.existing_window.name, text)
+
     return "{} AS ({})".format(element.name, text)
