@@ -29,6 +29,25 @@ query = select(
 ).where(sa.func.cast(table.c["ts"], sa.Date) == '2023-01-01').window(w)
 ```
 
+## Development
+
+To setup a development environment run:
+
+```bash
+python3 -m venv venv
+source ./venv/bin/activate
+pip install --upgrade pip
+pip install -r dev-requirements.txt -e .
+pre-commit install
+```
+
+Running tests:
+
+```bash
+make test
+make coverage
+```
+
 ---
 
 A waterfountain1996 project.
