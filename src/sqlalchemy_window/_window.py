@@ -42,6 +42,18 @@ NO_OTHERS = FrameExclude.NO_OTHERS
 
 
 class Window(ClauseElement):
+    """Represent a WINDOW expression.
+
+    This is a special construct to allow reuse of the same
+    options for window function in multiple places.
+
+    Do not use this element directly, rather through a
+    `sqlalchemy_window.window` factory.
+
+    For more information, see:
+    https://www.postgresql.org/docs/current/sql-select.html#SQL-WINDOW
+    """
+
     partition_by: typing.Optional[ClauseList] = None
     order_by: typing.Optional[ClauseList] = None
 
@@ -130,6 +142,48 @@ def window(
     groups: typing.Optional[_RangeArgument] = None,
     exclude: typing.Optional[FrameExclude] = None,
 ) -> Window:
+    """Construct a `Window` object.
+
+    It can be then passed to `sqlalchemy_window.Select` object
+    to build a WINDOW clause.
+
+    Arguments to this function try to mimic actual options passed
+    to a WINDOW clause in SELECT statement.
+
+    Example usage:
+
+        `w = window("w", partition_by=literal_column("foo"))`
+
+    This roughly compiles to following SQL:
+
+        `w AS (PARTITION BY foo)`
+
+    `existing_window`: A window to inherit from. When passed to
+    `sqlalchemy_window.Select.window` must come before this one.
+    If provided, you can't specify a partition_by parameter or
+    it'll raise a `sqlalchemy.exc.ArgumentError` exception no matter
+    whether the `partition_by` of the `existing_window` is set or not.
+    However, you can pass an `order_by` parameter ONLY if the
+    `existing_window` does NOT specify it.
+
+    `partition_by`: Column(s) to partition the rolling window by.
+
+    `order_by`: Column(s) to order the rows inside the window by.
+
+    `range_`, `rows`, `groups`: An optional window frame.
+    Exactly one of these arguments must be provided, otherwise
+    an `sqlalchemy.exc.ArgumentError` is raised.
+    It can either be a `range` object or a 2-element tuple.
+    If a tuple is used, its items can either be an it or None.
+    If None is used, it will be rendered as
+    `UNBOUNDED PRECEDING/FOLLOWING`.
+    If int is used: 0 renders as `'CURRENT ROW'`,
+    negative number renders AS `'N PRECEDING'`
+    and a positive as `'N FOLLOWING'`.
+
+    `exclude`: `EXCLUDE` option inside the frame clause.
+    Only used if either of `range_`, `rows`, `groups` is specified.
+    """
     return Window(
         name=name,
         existing_window=existing_window,

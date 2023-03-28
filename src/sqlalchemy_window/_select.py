@@ -14,15 +14,36 @@ if typing.TYPE_CHECKING:  # pragma: no cover
 
 
 class Select(_Select):
+    """Custom `Select` construct with WINDOW clause support."""
+
     _window_clause: typing.Tuple[Window, ...] = ()
 
     def window(self, *windows: Window) -> "Select":
+        """Return a new `Select` object with extended WINDOW clause."""
         assert isinstance(self._window_clause, tuple)
         self._window_clause += windows
         return self
 
 
 def select(*entities: "_ColumnsClauseArgument[typing.Any]") -> Select:
+    """Construct a `Select` object with window support.
+
+    Example usage:
+
+    ```
+        w = Window("w", ...)
+        select(
+            over_window( func.max(literal_column("foo")), w).label("bar")
+        ).window(w)
+    ```
+
+    This would then produce roughly following SQL:
+
+    ```
+        SELECT max(foo) OVER w AS BAR
+        WINDOW w AS (...)
+    ```
+    """
     return Select(*entities)
 
 
