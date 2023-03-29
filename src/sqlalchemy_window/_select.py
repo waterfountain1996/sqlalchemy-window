@@ -131,9 +131,11 @@ def compile_select(element: Select, compiler: SQLCompiler, **kwargs: typing.Any)
             if t:
                 text += " \nHAVING " + t
 
-        # Here's the logic for rendering a WINDOW clause
-        if hasattr(select, "_window_clause") and select._window_clause:
-            t = ", ".join(compiler.process(window, **kwargs) for window in select._window_clause)
+        # Here's the logic for rendering a WINDOW clause.
+        # 'select' is a freshly composed base Select object
+        # so we use 'element' to get the original window clause.
+        if hasattr(element, "_window_clause") and element._window_clause:
+            t = ", ".join(compiler.process(window, **kwargs) for window in element._window_clause)
             if t:
                 text += " \nWINDOW " + t
 

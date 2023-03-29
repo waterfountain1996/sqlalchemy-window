@@ -9,4 +9,4 @@ from ._window import TIES as TIES
 from ._window import Window as Window
 from ._window import window as window
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
