@@ -220,7 +220,8 @@ def compile_window(element: Window, compiler: SQLCompiler, **kwargs: typing.Any)
 
     frame: typing.Optional[str] = None
     for word, attr in (("RANGE", "range_"), ("ROWS", "rows"), ("GROUPS", "groups")):
-        if (value := getattr(element, attr)) is not None:
+        value = getattr(element, attr, None)
+        if value is not None:
             frame = "{} BETWEEN {}".format(word, format_frame_clause(value))
 
     if frame and element.exclude:
