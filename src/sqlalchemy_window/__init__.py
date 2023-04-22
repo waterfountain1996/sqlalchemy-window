@@ -9,4 +9,4 @@ from ._window import Window as Window
 from ._window import over_window as over_window
 from ._window import window as window
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
