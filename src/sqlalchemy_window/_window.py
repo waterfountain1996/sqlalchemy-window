@@ -9,7 +9,9 @@ from sqlalchemy.sql.elements import RANGE_CURRENT
 from sqlalchemy.sql.elements import RANGE_UNBOUNDED
 from sqlalchemy.sql.elements import ClauseElement
 from sqlalchemy.sql.elements import ClauseList
+from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.elements import _OverRange
+from sqlalchemy.sql.functions import FunctionElement
 from sqlalchemy.sql.roles import ByOfRole
 
 if typing.TYPE_CHECKING:  # pragma: no cover
@@ -27,6 +29,8 @@ _RangeArgument = typing.Union[
 
 _RangeType = typing.Union[_OverRange, int]
 
+_FT = typing.TypeVar("_FT")
+
 
 class FrameExclude(enum.Enum):
     CURRENT_ROW = "CURRENT ROW"
@@ -39,6 +43,43 @@ CURRENT_ROW = FrameExclude.CURRENT_ROW
 GROUP = FrameExclude.GROUP
 TIES = FrameExclude.TIES
 NO_OTHERS = FrameExclude.NO_OTHERS
+
+
+class OverWindow(ColumnElement[_FT]):
+    """Represent an `OVER` statement for window functions.
+
+    Do not construct directly, rather through a
+    `sqlalchemy_window.over_window` factory.
+    """
+
+    def __init__(self, element: FunctionElement[_FT], window: "Window") -> None:
+        self.element = element
+        self.window = window
+
+    @property
+    def type(self):
+        return self.element.type
+
+
+def over_window(element: FunctionElement[_FT], window: "Window") -> OverWindow[_FT]:
+    """Construct an `OverWindow` object.
+
+    Built-in `.over()` method on SQLAlchemy's window function can only
+    be used to specify an inline window clause. However if you want to
+    reuse one window in multiple places you can use this.
+
+    Example usage:
+
+    ```
+        w = window("w", ...)
+        over_window(func.first_value(literal_column("foo")), w)
+    ```
+
+    This roughly compiles to following SQL:
+
+        `first_value(foo) OVER w`
+    """
+    return OverWindow(element, window)
 
 
 class Window(ClauseElement):
@@ -131,6 +172,10 @@ class Window(ClauseElement):
         lower, upper = map(normalize_boundary, range_)
         return lower, upper
 
+    def over_self(self, element: FunctionElement[_FT]) -> OverWindow[_FT]:
+        """Construct an `OverWindow` object from a given function and self."""
+        return over_window(element, self)
+
 
 def window(
     name: str,
@@ -194,6 +239,11 @@ def window(
         groups=groups,
         exclude=exclude,
     )
+
+
+@compiles(OverWindow)
+def compile_over_window(element: OverWindow, compiler: SQLCompiler, **kwargs: typing.Any) -> str:
+    return "{} OVER {}".format(compiler.process(element.element), element.window.name)
 
 
 @compiles(Window, "postgresql")
