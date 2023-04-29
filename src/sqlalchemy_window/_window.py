@@ -52,6 +52,8 @@ class OverWindow(ColumnElement[_FT]):
     `sqlalchemy_window.over_window` factory.
     """
 
+    inherit_cache: bool = True
+
     def __init__(self, element: FunctionElement[_FT], window: "Window") -> None:
         self.element = element
         self.window = window
@@ -94,6 +96,8 @@ class Window(ClauseElement):
     For more information, see:
     https://www.postgresql.org/docs/current/sql-select.html#SQL-WINDOW
     """
+
+    inherit_cache: bool = True
 
     partition_by: typing.Optional[ClauseList] = None
     order_by: typing.Optional[ClauseList] = None

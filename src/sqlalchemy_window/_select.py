@@ -16,6 +16,8 @@ if typing.TYPE_CHECKING:  # pragma: no cover
 class Select(_Select):
     """Custom `Select` construct with WINDOW clause support."""
 
+    inherit_cache: bool = True
+
     _window_clause: typing.Tuple[Window, ...] = ()
 
     def window(self, *windows: Window) -> "Select":
