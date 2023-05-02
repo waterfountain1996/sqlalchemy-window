@@ -11,7 +11,7 @@ for window functions:
 
 ```py
 import sqlalchemy as sa
-from sqlalchemy_window import over_window, select, window
+from sqlalchemy_window import select, window
 
 metadata = sa.MetaData()
 table = sa.Table(
