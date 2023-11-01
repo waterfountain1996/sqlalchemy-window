@@ -1,5 +1,10 @@
 sources := src tests
 
+install:
+	pip install --upgrade pip
+	pip install -r dev-requirements.txt
+	pip install -e .
+
 test:
 	coverage run
 
