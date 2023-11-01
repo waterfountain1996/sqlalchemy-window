@@ -32,3 +32,16 @@ command_line = "-m pytest"
 [tool.coverage.report]
 show_missing = true
 skip_empty = true
+
+[tool.ruff]
+line-length = 99
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "I", "RSE"]
+ignore = ["E501"]
+unfixable = ["B"]
+
+[tool.ruff.isort]
+known-first-party = ["sqlalchemy_window", "tests"]
+force-single-line = true
