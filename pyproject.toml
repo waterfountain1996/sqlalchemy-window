@@ -1,24 +1,31 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "sqlalchemy_window"
 description = "A SQLAlchemy plugin to add support for PostgreSQL WINDOW clause"
 readme = "README.md"
-license = {text = "MIT"}
-authors = [{name = "Roman Necheporenko", email = "roman@waterfountain.one"}]
-requires-python = ">=3.7"
-dependencies = ["sqlalchemy>=2.0"]
-dynamic = ["version"]
+license = "MIT"
+requires-python = ">=3.8"
+authors = [{ name = "Roman Necheporenko", email = "roman@waterfountain.one" }]
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
 ]
+dependencies = ["sqlalchemy>=2.0"]
+dynamic = ["version"]
 
-[tool.setuptools.dynamic]
-version = {attr = "sqlalchemy_window.__version__"}
+[project.urls]
+Repository = "https://github.com/waterfountain1996/sqlalchemy-window"
+
+[tool.hatch.version]
+path = "src/sqlalchemy_window/__init__.py"
+
+[tool.hatch.build]
+include = ["src/sqlalchemy_window"]
+exclude = ["tests"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
