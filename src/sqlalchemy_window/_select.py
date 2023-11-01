@@ -156,9 +156,9 @@ def compile_select(element: Select, compiler: SQLCompiler, **kwargs: typing.Any)
     og_compose_select_body = compiler._compose_select_body
 
     # Monkey patch the method
-    compiler._compose_select_body = _compose_select_body
+    compiler._compose_select_body = _compose_select_body  # type: ignore[method-assign]
     text = compiler.visit_select(element, **kwargs)
 
     # Restore original version
-    compiler._compose_select_body = og_compose_select_body
+    compiler._compose_select_body = og_compose_select_body  # type: ignore[method-assign]
     return text
