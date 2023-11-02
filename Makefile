@@ -1,5 +1,8 @@
 sources := src tests
 
+build:
+	hatch build
+
 install:
 	pip install --upgrade pip
 	pip install -r dev-requirements.txt
