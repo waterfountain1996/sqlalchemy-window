@@ -26,6 +26,7 @@ path = "src/sqlalchemy_window/__init__.py"
 [tool.hatch.build]
 include = ["src/sqlalchemy_window"]
 exclude = ["tests"]
+packages = ["src/sqlalchemy_window"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
